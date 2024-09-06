@@ -1,0 +1,108 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class EventSchedulerGUI {
+    private EventScheduler scheduler;
+    private JTextArea eventList;
+
+    public EventSchedulerGUI() {
+        scheduler = new EventScheduler();
+        setupUI();
+    }
+
+    private void setupUI() {
+        JFrame frame = new JFrame("Event Scheduler");
+        frame.setSize(600, 600);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+
+        // Input panel for event details
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2));
+
+        JLabel nameLabel = new JLabel("Event Name:");
+        JTextField nameField = new JTextField();
+        JLabel dateLabel = new JLabel("Event Date (YYYY-MM-DD):");
+        JTextField dateField = new JTextField();
+        JLabel timeLabel = new JLabel("Event Time (HH:MM):");
+        JTextField timeField = new JTextField();
+        JLabel descLabel = new JLabel("Description:");
+        JTextField descField = new JTextField();
+
+        JButton addButton = new JButton("Add Event");
+        JButton deleteButton = new JButton("Delete Event");
+        JButton showForwardButton = new JButton("Show Forward");
+        JButton showReverseButton = new JButton("Show Reverse");
+
+        inputPanel.add(nameLabel);
+        inputPanel.add(nameField);
+        inputPanel.add(dateLabel);
+        inputPanel.add(dateField);
+        inputPanel.add(timeLabel);
+        inputPanel.add(timeField);
+        inputPanel.add(descLabel);
+        inputPanel.add(descField);
+        inputPanel.add(addButton);
+        inputPanel.add(deleteButton);
+
+        // Event list display area
+        eventList = new JTextArea();
+        eventList.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(eventList);
+
+        // Add Event button functionality
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = nameField.getText();
+                String date = dateField.getText();
+                String time = timeField.getText();
+                String description = descField.getText();
+
+                if (!name.isEmpty() && !date.isEmpty() && !time.isEmpty() && !description.isEmpty()) {
+                    scheduler.addEvent(name, date, time, description);
+                    refreshEventList();
+                    nameField.setText("");
+                    dateField.setText("");
+                    timeField.setText("");
+                    descField.setText("");
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Please fill all fields.");
+                }
+            }
+        });
+
+        // Delete Event button functionality
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = nameField.getText();
+
+                if (!name.isEmpty()) {
+                    boolean deleted = scheduler.deleteEvent(name);
+                    if (deleted) {
+                        refreshEventList();
+                        nameField.setText("");
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Event not found.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Please enter the event name to delete.");
+                }
+            }
+        });
+
+        // Show events in forward order
+        showForwardButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                eventList.setText(scheduler.getSchedule());
+            }
+        });
+
+        // Show events in reverse order
+        showReverseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                event
