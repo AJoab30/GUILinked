@@ -1,0 +1,118 @@
+class EventScheduler {
+    private EventNode head;  // First node (head) of the linked list
+    private EventNode tail;  // Last node (tail) of the linked list
+
+    public EventScheduler() {
+        head = null;
+        tail = null;
+    }
+
+    // Add event in sorted order by date and time
+    public void addEvent(String name, String date, String time, String description) {
+        EventNode newEvent = new EventNode(name, date, time, description);
+
+        if (head == null) {
+            head = newEvent;
+            tail = newEvent;
+        } else if (compareEvents(newEvent, head) < 0) {
+            // Insert at the head
+            newEvent.next = head;
+            head.prev = newEvent;
+            head = newEvent;
+        } else if (compareEvents(newEvent, tail) >= 0) {
+            // Insert at the tail
+            tail.next = newEvent;
+            newEvent.prev = tail;
+            tail = newEvent;
+        } else {
+            // Insert in the middle (sorted position)
+            EventNode current = head;
+            while (current.next != null && compareEvents(newEvent, current.next) > 0) {
+                current = current.next;
+            }
+            newEvent.next = current.next;
+            if (current.next != null) {
+                current.next.prev = newEvent;
+            }
+            current.next = newEvent;
+            newEvent.prev = current;
+        }
+    }
+
+    // Compare events based on date and time
+    private int compareEvents(EventNode e1, EventNode e2) {
+        if (e1.date.compareTo(e2.date) == 0) {
+            return e1.time.compareTo(e2.time);
+        }
+        return e1.date.compareTo(e2.date);
+    }
+
+    // Delete an event by name
+    public boolean deleteEvent(String name) {
+        if (head == null) return false;
+
+        EventNode current = head;
+
+        // Search for the event to delete
+        while (current != null && !current.name.equals(name)) {
+            current = current.next;
+        }
+
+        if (current == null) return false;
+
+        if (current == head) {
+            // Delete the head
+            head = current.next;
+            if (head != null) {
+                head.prev = null;
+            } else {
+                tail = null;  // List is now empty
+            }
+        } else if (current == tail) {
+            // Delete the tail
+            tail = current.prev;
+            if (tail != null) {
+                tail.next = null;
+            } else {
+                head = null;  // List is now empty
+            }
+        } else {
+            // Delete from the middle
+            current.prev.next = current.next;
+            current.next.prev = current.prev;
+        }
+        return true;
+    }
+
+    // Return the event schedule as a string (traverse forward)
+    public String getSchedule() {
+        if (head == null) return "No events scheduled.";
+        
+        StringBuilder schedule = new StringBuilder("Scheduled Events (Forward):\n");
+        EventNode current = head;
+        while (current != null) {
+            schedule.append("Event: ").append(current.name).append("\n")
+                    .append("Date: ").append(current.date).append("\n")
+                    .append("Time: ").append(current.time).append("\n")
+                    .append("Description: ").append(current.description).append("\n\n");
+            current = current.next;
+        }
+        return schedule.toString();
+    }
+
+    // Return the event schedule in reverse order (traverse backward)
+    public String getScheduleReverse() {
+        if (tail == null) return "No events scheduled.";
+        
+        StringBuilder schedule = new StringBuilder("Scheduled Events (Reverse):\n");
+        EventNode current = tail;
+        while (current != null) {
+            schedule.append("Event: ").append(current.name).append("\n")
+                    .append("Date: ").append(current.date).append("\n")
+                    .append("Time: ").append(current.time).append("\n")
+                    .append("Description: ").append(current.description).append("\n\n");
+            current = current.prev;
+        }
+        return schedule.toString();
+    }
+}
